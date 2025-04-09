@@ -5,6 +5,7 @@ import { Toaster } from "./components/ui/toaster";
 import { AuthProvider } from "./components/auth/AuthContext";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import AppLayout from "./components/layout/AppLayout";
+import { DebugEnv } from "./components/DebugEnv";
 
 // Lazy-loaded components
 const Home = lazy(() => import("./pages/Home"));
@@ -58,6 +59,7 @@ function App() {
           }
         >
           <AppLayout>
+            <DebugEnv />
             <Routes>
               {/* Public routes */}
               <Route path="/" element={<Home />} />
