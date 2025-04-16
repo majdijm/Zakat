@@ -135,65 +135,75 @@ const Dashboard: React.FC<DashboardProps> = ({ showWelcome = true }) => {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-              <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-100">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-gray-500">Total Assets</p>
-                    <h3 className="text-2xl font-bold text-gray-800">{formatCurrency(totalAssetValue)}</h3>
+            {assets.length === 0 ? (
+              <div className="flex flex-col items-center justify-center h-48">
+                <Coins className="h-10 w-10 text-amber-500 mb-3" />
+                <span className="text-gray-500 text-lg">You haven't added any assets yet.</span>
+                <span className="text-gray-400 text-sm mt-1 mb-4">Get started by adding your first asset to see your stats and Zakat calculations.</span>
+                <Button asChild size="sm" variant="outline" className="flex items-center mt-2">
+                  <Link to="/assets">
+                    Manage Assets
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Link>
+                </Button>
+              </div>
+            ) : (
+              <>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                  <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-100">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm font-medium text-gray-500">Total Assets</p>
+                        <h3 className="text-2xl font-bold text-gray-800">{formatCurrency(totalAssetValue)}</h3>
+                      </div>
+                      <div className="h-12 w-12 bg-blue-100 rounded-full flex items-center justify-center">
+                        <Wallet className="h-6 w-6 text-blue-600" />
+                      </div>
+                    </div>
                   </div>
-                  <div className="h-12 w-12 bg-blue-100 rounded-full flex items-center justify-center">
-                    <Wallet className="h-6 w-6 text-blue-600" />
+                  <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-100">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm font-medium text-gray-500">Gold & Silver</p>
+                        <h3 className="text-2xl font-bold text-gray-800">
+                          {formatCurrency(assetsByCategory.gold + assetsByCategory.silver)}
+                        </h3>
+                      </div>
+                      <div className="h-12 w-12 bg-yellow-100 rounded-full flex items-center justify-center">
+                        <Coins className="h-6 w-6 text-yellow-600" />
+                      </div>
+                    </div>
+                  </div>
+                  <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-100">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm font-medium text-gray-500">Estimated Zakat</p>
+                        <h3 className="text-2xl font-bold text-gray-800">
+                          {formatCurrency(totalAssetValue * 0.025)}
+                        </h3>
+                      </div>
+                      <div className="h-12 w-12 bg-green-100 rounded-full flex items-center justify-center">
+                        <Calculator className="h-6 w-6 text-green-600" />
+                      </div>
+                    </div>
                   </div>
                 </div>
-              </div>
-              
-              <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-100">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-gray-500">Gold & Silver</p>
-                    <h3 className="text-2xl font-bold text-gray-800">
-                      {formatCurrency(assetsByCategory.gold + assetsByCategory.silver)}
-                    </h3>
-                  </div>
-                  <div className="h-12 w-12 bg-yellow-100 rounded-full flex items-center justify-center">
-                    <Coins className="h-6 w-6 text-yellow-600" />
-                  </div>
+                <div className="mt-6">
+                  <UserStats />
                 </div>
-              </div>
-              
-              <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-100">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-gray-500">Estimated Zakat</p>
-                    <h3 className="text-2xl font-bold text-gray-800">
-                      {formatCurrency(totalAssetValue * 0.025)}
-                    </h3>
-                  </div>
-                  <div className="h-12 w-12 bg-green-100 rounded-full flex items-center justify-center">
-                    <Calculator className="h-6 w-6 text-green-600" />
-                  </div>
+                <div className="flex justify-between items-center mt-6">
+                  <p className="text-sm text-gray-600">
+                    {`You have ${assets.length} asset${assets.length !== 1 ? 's' : ''} in your portfolio.`}
+                  </p>
+                  <Button asChild size="sm" variant="outline" className="flex items-center">
+                    <Link to="/assets">
+                      Manage Assets
+                      <ArrowRight className="ml-2 h-4 w-4" />
+                    </Link>
+                  </Button>
                 </div>
-              </div>
-            </div>
-            
-            <div className="mt-6">
-              <UserStats />
-            </div>
-            
-            <div className="flex justify-between items-center mt-6">
-              <p className="text-sm text-gray-600">
-                {assets.length === 0 
-                  ? "You haven't added any assets yet. Get started by adding your first asset." 
-                  : `You have ${assets.length} asset${assets.length !== 1 ? 's' : ''} in your portfolio.`}
-              </p>
-              <Button asChild size="sm" variant="outline" className="flex items-center">
-                <Link to="/assets">
-                  Manage Assets
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Link>
-              </Button>
-            </div>
+              </>
+            )}
           </CardContent>
         </Card>
       )}
