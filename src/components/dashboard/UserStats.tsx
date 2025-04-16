@@ -96,6 +96,17 @@ const UserStats: React.FC = () => {
     return null;
   }
 
+  if (stats.assetCount === 0 && stats.zakatHistory === 0) {
+    return (
+      <Card className="w-full">
+        <CardContent className="pt-6 flex flex-col items-center justify-center h-32">
+          <AlertCircle className="h-8 w-8 text-amber-500 mb-2" />
+          <span className="text-gray-500">No stats available yet. Add assets or calculate Zakat to see your stats.</span>
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
     <Card className="w-full">
       <CardHeader>
@@ -119,18 +130,15 @@ const UserStats: React.FC = () => {
               className="h-2"
             />
           </div>
-          
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-100">
               <p className="text-sm font-medium text-gray-500">Asset Count</p>
               <p className="text-2xl font-bold">{stats.assetCount}</p>
             </div>
-            
             <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-100">
               <p className="text-sm font-medium text-gray-500">Zakat Calculations</p>
               <p className="text-2xl font-bold">{stats.zakatHistory}</p>
             </div>
-            
             <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-100">
               <div className="flex justify-between items-center">
                 <div>
