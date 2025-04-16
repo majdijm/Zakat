@@ -367,7 +367,7 @@ const AssetManagement: React.FC = () => {
               </div>
             ) : assets.length === 0 ? (
               <div className="text-center py-10">
-                <p className="text-gray-500">No assets found. Add your first asset to get started.</p>
+                <p className="text-gray-500">No assets found.</p>
               </div>
             ) : (
               <div className="overflow-x-auto">
