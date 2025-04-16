@@ -23,6 +23,7 @@ interface ZakatCalculation {
 const UserStats: React.FC = () => {
   const { user } = useAuth();
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [stats, setStats] = useState({
     totalAssets: 0,
     assetCount: 0,
@@ -35,28 +36,26 @@ const UserStats: React.FC = () => {
     const fetchUserStats = async () => {
       if (!user) {
         setLoading(false);
+        setError(null);
         return;
       }
 
       try {
         setLoading(true);
-        
+        setError(null);
+        console.log('UserStats: Fetching assets and zakat history...');
         // Fetch assets
         const assetsResponse = await getUserItems<Asset>('assets', user.id);
-        
         // Fetch zakat history
         const zakatResponse = await getUserItems<ZakatCalculation>('zakat_calculations', user.id);
-
         // Calculate stats
         const assets = assetsResponse.data || [];
         const zakatHistory = zakatResponse.data || [];
         const totalAssets = assets.reduce((sum, asset) => sum + asset.value, 0);
-        
         // Get the most recent nisab threshold from zakat history, or use default
         const nisabThreshold = zakatHistory.length > 0 
           ? zakatHistory[0].nisab_value 
           : 5000; // Default value in USD
-        
         setStats({
           totalAssets,
           assetCount: assets.length,
@@ -64,10 +63,13 @@ const UserStats: React.FC = () => {
           nisabThreshold,
           isAboveNisab: totalAssets >= nisabThreshold,
         });
-      } catch (error) {
+        console.log('UserStats: Fetch success', { assets, zakatHistory });
+      } catch (error: any) {
         console.error('Error fetching user stats:', error);
+        setError('Failed to load stats. Please try again later.');
       } finally {
         setLoading(false);
+        console.log('UserStats: Loading finished');
       }
     };
 
@@ -87,6 +89,17 @@ const UserStats: React.FC = () => {
         <CardContent className="pt-6 flex justify-center items-center h-32">
           <Loader2 className="h-8 w-8 animate-spin text-emerald-600" />
           <span className="ml-2 text-emerald-600">Loading stats...</span>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (error) {
+    return (
+      <Card className="w-full">
+        <CardContent className="pt-6 flex flex-col items-center justify-center h-32">
+          <AlertCircle className="h-8 w-8 text-red-500 mb-2" />
+          <span className="text-red-500">{error}</span>
         </CardContent>
       </Card>
     );
