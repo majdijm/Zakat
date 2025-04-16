@@ -119,17 +119,19 @@ const ZakatCalculator = ({
     }
   };
 
-  // Show loading state if data is being fetched
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50">
-        <ZakatCalculatorSEO />
-        <div className="container mx-auto py-8 px-4">
-          <div className="flex flex-col items-center justify-center py-12">
-            <Loader2 className="h-8 w-8 animate-spin text-emerald-600 mb-4" />
-            <p className="text-emerald-600">Loading your assets...</p>
-          </div>
-        </div>
+      <div className="flex flex-col items-center justify-center py-10">
+        <Loader2 className="h-8 w-8 animate-spin text-emerald-600 mb-4" />
+        <span className="text-emerald-600">Loading your assets...</span>
+      </div>
+    );
+  }
+
+  if (assets.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center py-10">
+        <span className="text-gray-500">No assets found for Zakat calculation.</span>
       </div>
     );
   }

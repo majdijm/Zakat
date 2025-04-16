@@ -13,7 +13,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "../ui/alert-dialog";
-import { Plus } from "lucide-react";
+import { Plus, Loader2 } from "lucide-react";
 import InventoryGrid from "./InventoryGrid";
 import InventoryItemForm from "./InventoryItemForm";
 import InventoryItemDetails from "./InventoryItemDetails";
@@ -228,16 +228,19 @@ const AssetInventory = () => {
     return inventoryItems.find((item) => item.id === selectedItem);
   };
 
-  // Show loading state
   if (itemsLoadingState) {
     return (
-      <div className="min-h-screen bg-gray-50">
-        <div
-          className="container mx-auto py-6 px-4 flex items-center justify-center"
-          style={{ minHeight: "calc(100vh - 64px)" }}
-        >
-          <Loading size="lg" text="Loading inventory..." />
-        </div>
+      <div className="flex flex-col items-center justify-center py-10">
+        <Loader2 className="h-8 w-8 animate-spin text-emerald-600 mb-4" />
+        <span className="text-emerald-600">Loading your inventory...</span>
+      </div>
+    );
+  }
+
+  if (inventoryItems.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center py-10">
+        <span className="text-gray-500">No assets in your inventory.</span>
       </div>
     );
   }
