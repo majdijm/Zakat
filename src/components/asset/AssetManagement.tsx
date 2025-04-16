@@ -235,12 +235,130 @@ const AssetManagement: React.FC = () => {
     return categories[category] || category;
   };
 
+  let assetContent;
+  if (isLoading) {
+    assetContent = (
+      <div className="flex flex-col items-center justify-center py-10">
+        <Loader2 className="h-8 w-8 animate-spin text-emerald-600 mb-4" />
+        <span className="text-emerald-600">Loading assets...</span>
+      </div>
+    );
+  } else if (assets.length === 0) {
+    assetContent = (
+      <div className="text-center py-10">
+        <p className="text-gray-500">No assets found.</p>
+      </div>
+    );
+  } else {
+    assetContent = (
+      <div className="overflow-x-auto">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Name</TableHead>
+              <TableHead>Asset Category</TableHead>
+              <TableHead>Value</TableHead>
+              <TableHead className="text-right">Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {assets.map(asset => (
+              <TableRow key={asset.id}>
+                {editingAsset && editingAsset.id === asset.id ? (
+                  <>
+                    <TableCell>
+                      <Input
+                        name="name"
+                        value={editingAsset.name}
+                        onChange={handleEditChange}
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <select
+                        name="category"
+                        value={editingAsset.category}
+                        onChange={handleEditChange}
+                        className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                      >
+                        <option value="cash">Cash</option>
+                        <option value="gold">Gold</option>
+                        <option value="silver">Silver</option>
+                        <option value="stocks">Stocks</option>
+                        <option value="property">Property</option>
+                        <option value="business">Business</option>
+                        <option value="other">Other</option>
+                      </select>
+                    </TableCell>
+                    <TableCell>
+                      <Input
+                        name="value"
+                        type="number"
+                        value={editingAsset.value}
+                        onChange={handleEditChange}
+                      />
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <div className="flex justify-end space-x-2">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => setEditingAsset(null)}
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          size="sm"
+                          className="bg-emerald-600 hover:bg-emerald-700"
+                          onClick={handleUpdateAsset}
+                          disabled={isSaving}
+                        >
+                          {isSaving ? (
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                          ) : (
+                            <Save className="h-4 w-4" />
+                          )}
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </>
+                ) : (
+                  <>
+                    <TableCell>{asset.name}</TableCell>
+                    <TableCell>{getCategoryLabel(asset.category)}</TableCell>
+                    <TableCell>{formatCurrency(asset.value)}</TableCell>
+                    <TableCell className="text-right">
+                      <div className="flex justify-end space-x-2">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => setEditingAsset(asset)}
+                        >
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="destructive"
+                          onClick={() => handleDeleteAsset(asset.id)}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </>
+                )}
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
+    );
+  }
+
   return (
     <div>
       <Helmet>
         <title>Asset Management | Zakat Manager</title>
       </Helmet>
-      
       <div className="container mx-auto px-4 py-8">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-3xl font-bold text-emerald-800">Asset Management</h1>
@@ -360,116 +478,8 @@ const AssetManagement: React.FC = () => {
               <div className="text-center py-10">
                 <p className="text-gray-500">Please sign in to view and manage your assets.</p>
               </div>
-            ) : isLoading ? (
-              <div className="flex flex-col items-center justify-center py-10">
-                <Loader2 className="h-8 w-8 animate-spin text-emerald-600 mb-4" />
-                <p className="text-gray-500">Loading assets...</p>
-              </div>
-            ) : assets.length === 0 ? (
-              <div className="text-center py-10">
-                <p className="text-gray-500">No assets found.</p>
-              </div>
             ) : (
-              <div className="overflow-x-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Name</TableHead>
-                      <TableHead>Asset Category</TableHead>
-                      <TableHead>Value</TableHead>
-                      <TableHead className="text-right">Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {assets.map(asset => (
-                      <TableRow key={asset.id}>
-                        {editingAsset && editingAsset.id === asset.id ? (
-                          <>
-                            <TableCell>
-                              <Input
-                                name="name"
-                                value={editingAsset.name}
-                                onChange={handleEditChange}
-                              />
-                            </TableCell>
-                            <TableCell>
-                              <select
-                                name="category"
-                                value={editingAsset.category}
-                                onChange={handleEditChange}
-                                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                              >
-                                <option value="cash">Cash</option>
-                                <option value="gold">Gold</option>
-                                <option value="silver">Silver</option>
-                                <option value="stocks">Stocks</option>
-                                <option value="property">Property</option>
-                                <option value="business">Business</option>
-                                <option value="other">Other</option>
-                              </select>
-                            </TableCell>
-                            <TableCell>
-                              <Input
-                                name="value"
-                                type="number"
-                                value={editingAsset.value}
-                                onChange={handleEditChange}
-                              />
-                            </TableCell>
-                            <TableCell className="text-right">
-                              <div className="flex justify-end space-x-2">
-                                <Button
-                                  size="sm"
-                                  variant="outline"
-                                  onClick={() => setEditingAsset(null)}
-                                >
-                                  <X className="h-4 w-4" />
-                                </Button>
-                                <Button
-                                  size="sm"
-                                  className="bg-emerald-600 hover:bg-emerald-700"
-                                  onClick={handleUpdateAsset}
-                                  disabled={isSaving}
-                                >
-                                  {isSaving ? (
-                                    <Loader2 className="h-4 w-4 animate-spin" />
-                                  ) : (
-                                    <Save className="h-4 w-4" />
-                                  )}
-                                </Button>
-                              </div>
-                            </TableCell>
-                          </>
-                        ) : (
-                          <>
-                            <TableCell>{asset.name}</TableCell>
-                            <TableCell>{getCategoryLabel(asset.category)}</TableCell>
-                            <TableCell>{formatCurrency(asset.value)}</TableCell>
-                            <TableCell className="text-right">
-                              <div className="flex justify-end space-x-2">
-                                <Button
-                                  size="sm"
-                                  variant="outline"
-                                  onClick={() => setEditingAsset(asset)}
-                                >
-                                  <Edit className="h-4 w-4" />
-                                </Button>
-                                <Button
-                                  size="sm"
-                                  variant="destructive"
-                                  onClick={() => handleDeleteAsset(asset.id)}
-                                >
-                                  <Trash2 className="h-4 w-4" />
-                                </Button>
-                              </div>
-                            </TableCell>
-                          </>
-                        )}
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
+              assetContent
             )}
           </CardContent>
         </Card>
