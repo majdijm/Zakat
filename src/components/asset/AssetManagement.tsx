@@ -35,6 +35,7 @@ const AssetManagement: React.FC = () => {
   });
   const [isAdding, setIsAdding] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
   const { user } = useAuth();
 
@@ -42,8 +43,8 @@ const AssetManagement: React.FC = () => {
   useEffect(() => {
     const fetchAssets = async () => {
       if (!user) {
-        // If no user, immediately show empty state
         setAssets([]);
+        setIsLoading(false);
         return;
       }
       
@@ -54,6 +55,7 @@ const AssetManagement: React.FC = () => {
         if (error) {
           console.error('Error details:', error);
           setAssets([]);
+          setIsLoading(false);
           return;
         }
         
@@ -61,11 +63,13 @@ const AssetManagement: React.FC = () => {
         setAssets(data || []);
       } catch (error: any) {
         console.error('Error fetching assets:', error.message);
-        // Initialize with empty array instead of showing an error
         setAssets([]);
+      } finally {
+        setIsLoading(false);
       }
     };
 
+    setIsLoading(true);
     fetchAssets();
   }, [user]);
 
@@ -355,6 +359,11 @@ const AssetManagement: React.FC = () => {
             {!user ? (
               <div className="text-center py-10">
                 <p className="text-gray-500">Please sign in to view and manage your assets.</p>
+              </div>
+            ) : isLoading ? (
+              <div className="flex flex-col items-center justify-center py-10">
+                <Loader2 className="h-8 w-8 animate-spin text-emerald-600 mb-4" />
+                <p className="text-gray-500">Loading assets...</p>
               </div>
             ) : assets.length === 0 ? (
               <div className="text-center py-10">
